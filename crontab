@@ -1,0 +1,23 @@
+* * * * * /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 * * * * /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 * * * /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 * * 0 /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 1 * * /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 1 1 * /home/andrew/work/QA-Automation/mycron1.1/job.sh
+
+5 */15 2/10 */3 3 /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 1-10/2 */2 * /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 15-31/5,6,7 * * /home/andrew/work/QA-Automation/mycron1.1/job.sh
+
+0 0 1-7 1 1 /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 1-7 JAN 1 /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 1-7 jAn 1 /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 1-7 jan 1 /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 1-7 jan MOn /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 1-7 jan mon /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 1-7 jan MON /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 24-31 feb sun /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 8-15 jul tue /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 3 29 MAr * /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 4 25 oct * /home/andrew/work/QA-Automation/mycron1.1/job.sh
+0 0 * jan mon /home/andrew/work/QA-Automation/mycron1.1/job.sh
