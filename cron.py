@@ -1,18 +1,15 @@
 import configparser
 import time
 import os
-from datetime import datetime
 
+from datetime import datetime
 from crontab import CronTab
 
-from logger import logger
-
-
-ABS_PATH = os.path.dirname(os.path.abspath(__file__))
-CONFIG_PATH = ABS_PATH + "/config.conf"
-CRONTAB_PATH = ABS_PATH + "/crontab"
+import const
+from logger import setup_logger
 
 NEXT_ENTRIES = 10
+
 
 def create_config(path):
     """
@@ -61,7 +58,7 @@ def read_config_for_crontab_path(config_path):
         except configparser.NoOptionError as e:
             logger.error(str(e) + ". Please specify path for crontab as \ncrontab=/path/to/crontab")
 
-    # else warn about config not found
+    # Else warn about config not found
     else:
         print("No config fount at {0}".format(ABS_PATH))
         create_config(config_path)
@@ -90,22 +87,24 @@ def init_cron(crontab_path):
             # Read jobs in list
             if cron.__len__() > 0:
                 for job in range(cron.__len__()):
-                    logger.info("Found job {0}".format(job) + "   " + str(cron[job]))
+                    logger.info("Found job {0}".format(job) + "    " + str(cron[job]))
 
                     # Show next entries
-                    logger.info("   Next {0} entries are".format(NEXT_ENTRIES))
+                    logger.info(" Next {0} entries".format(NEXT_ENTRIES))
                     for entry in range(get_next_entries(cron[job], NEXT_ENTRIES).__len__()):
-                        logger.info("   {0}) ".format(entry + 1) + get_next_entries(cron[job], NEXT_ENTRIES)[entry])
+                        logger.info(" {0}\t".format(entry + 1) + get_next_entries(cron[job], NEXT_ENTRIES)[entry])
 
                 # RUN CRON
                 try:
                     run_cron(cron)
                 except KeyboardInterrupt as e:
-                    logger.info("Cron finished. {0}".format(e))
+                    logger.info("Cron finished {0}".format(e))
             else:
                 logger.warning("No cron jobs found at {0}".format(crontab_path))
 
 
+# Main
 if __name__ == "__main__":
+    logger = setup_logger(const.LOG_PATH)
     logger.info("Started")
-    init_cron(read_config_for_crontab_path(CONFIG_PATH))
+    init_cron(read_config_for_crontab_path(const.CONFIG_PATH))
