@@ -12,6 +12,7 @@ ABS_PATH = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = ABS_PATH + "/config.conf"
 CRONTAB_PATH = ABS_PATH + "/crontab"
 
+NEXT_ENTRIES = 10
 
 def create_config(path):
     """
@@ -39,52 +40,72 @@ def run_cron(cron):
         logger.info(result)
 
 
-if __name__ == "__main__":
-    while True:
-        config = configparser.ConfigParser()
-        config.read(CONFIG_PATH)
-        if os.path.isfile(CONFIG_PATH):
-            try:
-                crontab_path = config.get("Settings", "crontab")
-            except configparser.NoSectionError as e:
-                logger.error(str(e) + ". Please specify section [Settings]")
-                break
-            except configparser.NoOptionError as e:
-                logger.error(str(e) + ". Please specify path for crontab as \ncrontab=/pat/to/crontab")
-                break
-            else:
-                """
-                Crontab
-                """
-                if not crontab_path:
-                    logger.warning("Crontab path is empty")
-                else:
-                    cron = CronTab(tabfile=crontab_path, user="andrew")
+def read_config_for_crontab_path(config_path):
+    config = configparser.ConfigParser()
 
-                    """
-                    Jobs
-                    """
-                    if cron.__len__() > 0:
-                        logger.info("Crontab jobs at {0}:".format(crontab_path))
-                        for job in range(cron.__len__()):
-                            logger.info("Job {0}:".format(job) + " " + str(cron[job]))
+    # Reading config
+    config.read(config_path)
 
-                            # Next entries
-                            logger.info("Next entries:")
-                            for entry in get_next_entries(cron[job], 10):
-                                logger.info(entry)
-                        try:
-                            run_cron(cron)
-                        except KeyboardInterrupt as e:
-                            logger.info("Cron finished. {0}".format(e))
-                    else:
-                        logger.info("Crontab is empty")
-                break
-        else:
-            print("No config fount at {0}".format(ABS_PATH))
-            create_config(CONFIG_PATH)
-            time.sleep(1)
-            print("Config created at {0} \nPlease specify crontab path.".format(CONFIG_PATH))
-            logger.warning("No config found. Config created at {0}".format(CONFIG_PATH))
+    # If path is ok >>
+    if os.path.isfile(config_path):
+        try:
+            crontab_path = config.get("Settings", "crontab")
+            logger.info("crontab path {0}".format(crontab_path))
 
+            # >> then return
+            return crontab_path
+
+            # >> or handle exception
+        except configparser.NoSectionError as e:
+            logger.error(str(e) + ". Please specify section [Settings]")
+        except configparser.NoOptionError as e:
+            logger.error(str(e) + ". Please specify path for crontab as \ncrontab=/path/to/crontab")
+
+    # else warn about config not found
+    else:
+        print("No config fount at {0}".format(ABS_PATH))
+        create_config(config_path)
         time.sleep(1)
+        print("Config created at {0} \nPlease specify crontab path.".format(config_path))
+        logger.warning("No config found. Config created at {0}".format(config_path))
+
+
+def init_cron(crontab_path):
+    # If crontab path is not ok >>
+    if not crontab_path:
+        # >> warn
+        logger.warning("Crontab path in config is empty")
+
+    # Else try to build cron list
+    else:
+        try:
+            cron = CronTab(tabfile=crontab_path, user="andrew")
+        except FileNotFoundError as e:
+            logger.error(e)
+        except IsADirectoryError as e:
+            logger.error(e)
+        else:
+            logger.info("Reading crontab at {0}".format(crontab_path))
+
+            # Read jobs in list
+            if cron.__len__() > 0:
+                for job in range(cron.__len__()):
+                    logger.info("Found job {0}".format(job) + "   " + str(cron[job]))
+
+                    # Show next entries
+                    logger.info("   Next {0} entries are".format(NEXT_ENTRIES))
+                    for entry in range(get_next_entries(cron[job], NEXT_ENTRIES).__len__()):
+                        logger.info("   {0}) ".format(entry + 1) + get_next_entries(cron[job], NEXT_ENTRIES)[entry])
+
+                # RUN CRON
+                try:
+                    run_cron(cron)
+                except KeyboardInterrupt as e:
+                    logger.info("Cron finished. {0}".format(e))
+            else:
+                logger.warning("No cron jobs found at {0}".format(crontab_path))
+
+
+if __name__ == "__main__":
+    logger.info("Started")
+    init_cron(read_config_for_crontab_path(CONFIG_PATH))
