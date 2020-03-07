@@ -5,8 +5,6 @@ import logging
 import os
 import time
 
-from const import LOG_PATH
-
 
 def setup_logger(log_path):
     if not os.path.isfile(log_path):

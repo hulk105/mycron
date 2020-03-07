@@ -5,8 +5,8 @@ import os
 from datetime import datetime
 from crontab import CronTab
 
-import const
-from logger import setup_logger
+from cron import const
+from logger.logger import setup_logger
 
 NEXT_ENTRIES = 10
 
