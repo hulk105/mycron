@@ -5,8 +5,8 @@ import os
 from datetime import datetime
 from crontab import CronTab
 
-from cron import const
-from logger.logger import setup_logger
+import const
+from logger import setup_logger
 
 NEXT_ENTRIES = 10
 
@@ -60,7 +60,7 @@ def read_config_for_crontab_path(config_path):
 
     # Else warn about config not found
     else:
-        print("No config fount at {0}".format(ABS_PATH))
+        print("No config fount at {0}".format(const.ABS_PATH))
         create_config(config_path)
         time.sleep(1)
         print("Config created at {0} \nPlease specify crontab path.".format(config_path))
@@ -73,7 +73,7 @@ def init_cron(crontab_path):
         # >> warn
         logger.warning("Crontab path in config is empty")
 
-    # Else try to build cron list
+    # Else try to build main list
     else:
         try:
             cron = CronTab(tabfile=crontab_path, user="andrew")
@@ -87,12 +87,12 @@ def init_cron(crontab_path):
             # Read jobs in list
             if cron.__len__() > 0:
                 for job in range(cron.__len__()):
-                    logger.info("Found job {0}".format(job) + "    " + str(cron[job]))
+                    logger.info("Found job {0}:".format(job) + "\t" + str(cron[job]))
 
                     # Show next entries
-                    logger.info(" Next {0} entries".format(NEXT_ENTRIES))
+                    logger.info("Next {0} entries:".format(NEXT_ENTRIES))
                     for entry in range(get_next_entries(cron[job], NEXT_ENTRIES).__len__()):
-                        logger.info(" {0}\t".format(entry + 1) + get_next_entries(cron[job], NEXT_ENTRIES)[entry])
+                        logger.info("{0}\t".format(entry + 1) + get_next_entries(cron[job], NEXT_ENTRIES)[entry])
 
                 # RUN CRON
                 try:
@@ -106,5 +106,5 @@ def init_cron(crontab_path):
 # Main
 if __name__ == "__main__":
     logger = setup_logger(const.LOG_PATH)
-    logger.info("Started")
+    logger.info("Cron started")
     init_cron(read_config_for_crontab_path(const.CONFIG_PATH))
